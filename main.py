@@ -2,6 +2,12 @@ from typing import Optional
 from fastapi import FastAPI
 from pydantic import BaseModel
 
+class PackageIn(BaseModel):
+    secret_id: int
+    name: str
+    number: str
+    description: Optional[str] = None
+
 class Package(BaseModel):
     name: str
     number: str
@@ -23,6 +29,6 @@ async def hello_world():
 # async def read_component(number:int, text: Optional[str]):
 #     return {"number": number, "text": text}
 
-@app.post("/package/{priority}")
-async def make_package(priority: int, package: Package, value: bool):
-    return {"priority": priority, **package.dict(), "value": value}
+@app.post("/package/", response_model=Package, response_model_exclude={"description"}) # exclude mean doesn't show parameter in response, but the other one include is just show the paramter. response_model_exclude_unset is boolean value (True), will not show if Optional value isn't fill
+async def make_package(package: PackageIn):
+    return package
